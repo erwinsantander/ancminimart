@@ -14,36 +14,33 @@
  $recent_sales    = find_recent_sale_added('5')
 ?>
 <?php include_once('layouts/header.php'); ?>
-
 <div class="row">
    <div class="col-md-6">
-     <?php echo display_msg($msg); ?>
    </div>
 </div>
   <div class="row">
     <a href="users.php" style="color:black;">
 		<div class="col-md-3">
-       <div class="panel panel-box clearfix">
+       <div class="panel  clearfix">
          <div class="panel-icon pull-left bg-secondary1">
           <i class="glyphicon glyphicon-user"></i>
         </div>
         <div class="panel-value pull-right">
-          <h2 class="margin-top"> <?php  echo $c_user['total']; ?> </h2>
-          <p class="text-muted">Users</p>
+          <h2 class="margin-top">&nbsp; <?php  echo $c_user['total']; ?> </h2>
+          <p class="text-muted"> &nbsp;Users</p>
         </div>
        </div>
     </div>
 	</a>
-	
 	<a href="categorie.php" style="color:black;">
     <div class="col-md-3">
-       <div class="panel panel-box clearfix">
+       <div class="panel  clearfix">
          <div class="panel-icon pull-left bg-red">
           <i class="glyphicon glyphicon-th-large"></i>
         </div>
         <div class="panel-value pull-right">
-          <h2 class="margin-top"> <?php  echo $c_categorie['total']; ?> </h2>
-          <p class="text-muted">Categories</p>
+          <h2 class="margin-top">&nbsp; <?php  echo $c_categorie['total']; ?> </h2>
+          <p class="text-muted"> &nbsp;Categories</p>
         </div>
        </div>
     </div>
@@ -51,33 +48,108 @@
 	
 	<a href="product.php" style="color:black;">
     <div class="col-md-3">
-       <div class="panel panel-box clearfix">
+       <div class="panel  clearfix">
          <div class="panel-icon pull-left bg-blue2">
           <i class="glyphicon glyphicon-shopping-cart"></i>
         </div>
         <div class="panel-value pull-right">
-          <h2 class="margin-top"> <?php  echo $c_product['total']; ?> </h2>
-          <p class="text-muted">Products</p>
+          <h2 class="margin-top">&nbsp; <?php  echo $c_product['total']; ?> </h2>
+          <p class="text-muted"> &nbsp;Products</p>
         </div>
        </div>
     </div>
 	</a>
-	
+  
 	<a href="sales.php" style="color:black;">
     <div class="col-md-3">
-       <div class="panel panel-box clearfix">
+       <div class="panel clearfix">
          <div class="panel-icon pull-left bg-green">
-          <i class="glyphicon glyphicon-usd"></i>
+          <i class="fas fa-money-bill-alt"></i>
         </div>
         <div class="panel-value pull-right">
-          <h2 class="margin-top"> <?php  echo $c_sale['total']; ?></h2>
-          <p class="text-muted">Sales</p>
+          <h2 class="margin-top">&nbsp; <?php echo $c_sale['total']; ?></h2>
+          <p class="text-muted"> &nbsp;Sales</p>
         </div>
        </div>
     </div>
-	</a>
+</a>
 </div>
+
+  <!-- Middle -->
+<!-- Monthly Sales Chart -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <strong>
+          <span class="glyphicon glyphicon-th"></span>
+          <span>Monthly Sales for <?php echo date('Y'); ?></span>
+        </strong>
+      </div>
+      <div class="panel-body">
+        <canvas id="monthlySalesChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  <?php
+  $year = date('Y');
+  $monthly_sales = get_monthly_sales($year);
+  $labels = [];
+  $data = [];
+  $months = [
+    '01' => 'Jan', '02' => 'Feb', '03' => 'Mar', '04' => 'Apr', '05' => 'May', '06' => 'Jun',
+    '07' => 'Jul', '08' => 'Aug', '09' => 'Sep', '10' => 'Oct', '11' => 'Nov', '12' => 'Dec'
+  ];
   
+  foreach ($months as $num => $name) {
+    $labels[] = $name;
+    $data[] = 0;
+  }
+  
+  while ($row = $monthly_sales->fetch_assoc()) {
+    $index = intval($row['month']) - 1;
+    $data[$index] = floatval($row['total_sales']);
+  }
+  ?>
+
+  var ctx = document.getElementById('monthlySalesChart').getContext('2d');
+  var chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: <?php echo json_encode($labels); ?>,
+      datasets: [{
+        label: 'Monthly Sales',
+        data: <?php echo json_encode($data); ?>,
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Sales (₱)'
+          }
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Monthly Sales for <?php echo $year; ?>'
+        }
+      }
+    }
+  });
+</script>
+
+  <!-- Bottom -->
   <div class="row">
    <div class="col-md-4">
      <div class="panel panel-default">
@@ -137,7 +209,7 @@
            </a>
            </td>
            <td><?php echo remove_junk(ucfirst($recent_sale['date'])); ?></td>
-           <td>$<?php echo remove_junk(first_character($recent_sale['price'])); ?></td>
+           <td>₱<?php echo remove_junk(first_character($recent_sale['price'])); ?></td>
         </tr>
 
        <?php endforeach; ?>
@@ -167,7 +239,7 @@
                 <?php endif;?>
                 <?php echo remove_junk(first_character($recent_product['name']));?>
                   <span class="label label-warning pull-right">
-                 $<?php echo (int)$recent_product['sale_price']; ?>
+                  ₱<?php echo (int)$recent_product['sale_price']; ?>
                   </span>
                 </h4>
                 <span class="list-group-item-text pull-right">
@@ -183,7 +255,16 @@
   <div class="row">
 
   </div>
-
+  <?php if ($msg): ?>
+<script>
+    Swal.fire({
+        icon: '<?php echo $msg['type']; ?>',
+        title: '<?php echo $msg['message']; ?>',
+        position: 'center',
+        showConfirmButton: true
+    });
+</script>
+<?php endif; ?>
 
 
 <?php include_once('layouts/footer.php'); ?>

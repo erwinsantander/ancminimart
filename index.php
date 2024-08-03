@@ -4,12 +4,13 @@
   if($session->isUserLoggedIn(true)) { redirect('home.php', false);}
 ?>
 <?php include_once('layouts/header.php'); ?>
+<body>
+
 <div class="login-page" style="border-radius:10%">
     <div class="text-center">
        <h1>Login Panel</h1>
        <h4>Inventory Management System</h4>
      </div>
-     <?php echo display_msg($msg); ?>
       <form method="post" action="auth.php" class="clearfix">
         <div class="form-group">
               <label for="username" class="control-label">Username</label>
@@ -24,4 +25,23 @@
         </div>
     </form>
 </div>
+<style>
+    body{
+    background-image: url('libs/images/logo1.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    }
+    
+</style>
+<?php if ($msg): ?>
+<script>
+    Swal.fire({
+        icon: '<?php echo $msg['type']; ?>',
+        title: '<?php echo $msg['message']; ?>',
+        position: 'center',
+        showConfirmButton: true
+    });
+</script>
+<?php endif; ?>
 <?php include_once('layouts/footer.php'); ?>
+</body>
