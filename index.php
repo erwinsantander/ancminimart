@@ -8,7 +8,7 @@
 
 <div class="login-page" style="border-radius:10%">
     <div class="text-center">
-       <h1>Login Panel</h1>
+       <h1>Login</h1>
        <h4>Inventory Management System</h4>
      </div>
       <form method="post" action="auth.php" class="clearfix">
